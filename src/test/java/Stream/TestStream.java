@@ -3,10 +3,8 @@ package Stream;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -14,8 +12,8 @@ import java.util.stream.Stream;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-//import blogs.BlogPost;
-//import blogs.BlogPostType;
+import blogs.BlogPost;
+import blogs.BlogPostType;
 
 public class TestStream {
 
@@ -103,7 +101,7 @@ public class TestStream {
                 BigDecimal.valueOf(2));
 
         // when
-         Optional<BigDecimal> reduced = numbers.stream().filter(e -> e.compareTo(BigDecimal.ZERO)>0).reduce(BigDecimal::multiply);
+         Optional<BigDecimal> reduced = numbers.stream().filter(e -> e.compareTo(BigDecimal.ZERO)>0).reduce((number1, number2) -> number1.multiply(number2));
         // then
         assertThat(reduced.isPresent()).isTrue();
         assertThat(reduced.get()).isEqualByComparingTo("300");
@@ -112,7 +110,7 @@ public class TestStream {
     @Test
     public void shouldGroupBlogPostsByTheirTypes() {
         // given
-     /*   List<BlogPost> posts = Arrays.asList(
+       List<BlogPost> posts = Arrays.asList(
                 new BlogPost("News item 1", "Author 1", BlogPostType.NEWS, 15),
                 new BlogPost("Tech review 1", "Author 2", BlogPostType.REVIEW, 5),
                 new BlogPost("Programming guide", "Author 1", BlogPostType.GUIDE, 20),
@@ -120,9 +118,11 @@ public class TestStream {
                 new BlogPost("Tech review 2", "Author 1", BlogPostType.REVIEW, 15));
 
         // when
-
+        Map<BlogPostType, List<BlogPost>> postsPerType = posts.stream().
+                collect(Collectors.groupingBy(BlogPost::getType));
 
         // then
+
         assertThat(postsPerType.get(BlogPostType.NEWS).size()).isEqualTo(2);
         assertThat(postsPerType.get(BlogPostType.GUIDE).size()).isEqualTo(1);
         assertThat(postsPerType.get(BlogPostType.REVIEW).size()).isEqualTo(2);
@@ -139,13 +139,12 @@ public class TestStream {
                 new BlogPost("Tech review 2", "Author 1", BlogPostType.REVIEW, 15));
 
         // when
-
+        Map<String, BlogPost> postPerTitle = posts.stream().collect(Collectors.toMap(post -> post.getTitle(), Function.identity()));
         // then
         assertThat(postPerTitle.get("News item 1").getTitle()).isEqualTo("News item 1");
         assertThat(postPerTitle.get("Tech review 1").getTitle()).isEqualTo("Tech review 1");
         assertThat(postPerTitle.get("Programming guide").getTitle()).isEqualTo("Programming guide");
         assertThat(postPerTitle.get("News item 2").getTitle()).isEqualTo("News item 2");
          assertThat(postPerTitle.get("Tech review 2").getTitle()).isEqualTo("Tech review 2");
-    } */
     }
-}
+    }
